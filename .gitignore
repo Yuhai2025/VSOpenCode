@@ -367,6 +367,8 @@ FodyWeavers.xsd
 *.msp
 /.playwright-mcp
 *.png
+!vs/Resources/Icon.png
+!vs/Resources/Preview.png
 /.omo
 .vscode/
 .vscode-test/
