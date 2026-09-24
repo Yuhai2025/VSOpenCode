@@ -6,6 +6,7 @@ A Visual Studio 2022 extension that integrates [OpenCode](https://opencode.ai) a
 
 - **WebView2 Tool Window** — OpenCode web interface embedded directly in VS
 - **Auto Server Detection** — Dynamically resolves `opencode serve` port from process output
+- **Version Manager Support** — Finds `opencode` installed under fnm, nvm, nvm-windows, volta, pnpm or bun, even when it is not on PATH
 - **Session Management** — Creates or finds sessions per project via OpenCode HTTP API
 - **Workspace Isolation** — localStorage interception provides per-project data isolation
 - **Project Sidebar Injection** — Injects project path into OpenCode localStorage for sidebar visibility
@@ -23,10 +24,40 @@ A Visual Studio 2022 extension that integrates [OpenCode](https://opencode.ai) a
 | Component | Version |
 |-----------|---------|
 | Visual Studio | 2022 (17.0+) |
-| OpenCode CLI | — installed and in PATH |
+| OpenCode CLI | — installed (`npm i -g opencode-ai`) |
 | .NET SDK | 10.0+ (for build) |
 
 > **Note**: The extension targets .NET Framework 4.7.2 runtime, but building from source requires the .NET 10 SDK.
+
+### Node.js version managers (fnm, nvm, volta, …)
+
+Visual Studio is a GUI application and never runs your shell profile, so a
+Node.js installed through a version manager is **not** on VS's `PATH` — even
+though `opencode` works fine in your terminal. The extension does not rely on
+`PATH`: it scans the on-disk layout of the common version managers instead.
+
+| Manager   | Locations probed |
+|-----------|------------------|
+| fnm       | `$FNM_DIR`, `%APPDATA%\fnm`, `%LOCALAPPDATA%\fnm`, `%USERPROFILE%\.fnm`, `%XDG_DATA_HOME%\fnm` — including `aliases\default` and every `node-versions\<ver>\installation` |
+| nvm       | `$NVM_DIR\versions\node\<ver>` |
+| nvm-windows | `$NVM_HOME`, `%APPDATA%\nvm` — every `v<ver>` |
+| volta     | `$VOLTA_HOME\bin` (default `%LOCALAPPDATA%\Volta`) |
+| pnpm      | `$PNPM_HOME`, `%LOCALAPPDATA%\pnpm` |
+| bun       | `%USERPROFILE%\.bun\bin` |
+
+Plain installs are covered too: `%APPDATA%\npm`, the `prefix` from
+`%USERPROFILE%\.npmrc`, `%ProgramFiles%\nodejs` and the standalone
+`%USERPROFILE%\.opencode\bin`.
+
+If your setup is unusual, point the extension at the binary directly:
+
+```bat
+setx VSOPENCODE_OPENCODE_PATH "C:\path\to\opencode.exe"
+```
+
+Restart Visual Studio afterwards. When `opencode` is only available as a
+`.cmd` npm shim, the extension resolves it to the real `.exe` behind it, so the
+server process can be started and terminated directly.
 
 ## Installation
 
@@ -56,6 +87,7 @@ The built `.vsix` is at `vs/bin/Release/net472/VSOpenCode.vsix`.
 VSOpenCodePackage
 ├── ServerController (singleton, shared across windows)
 │   ├── OpenCodeServerService     → opencode serve process lifecycle
+│   │   ├── OpenCodeLocator       → binary resolution (fnm/nvm/volta/PATH)
 │   │   └── ProcessBinding        → child process auto-termination
 │   ├── OpenCodeSessionService    → /session, /project HTTP API
 │   ├── ConnectionMonitor         → periodic health checks
@@ -87,6 +119,7 @@ vs/
 │   ├── IConnectionMonitor.cs
 │   ├── IProjectRootResolver.cs
 │   ├── ServerController.cs
+│   ├── OpenCodeLocator.cs      → resolves the opencode binary (fnm/nvm/volta/…)
 │   ├── OpenCodeServerService.cs
 │   ├── OpenCodeSessionService.cs
 │   ├── ConnectionMonitor.cs
