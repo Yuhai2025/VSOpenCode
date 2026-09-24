@@ -460,7 +460,14 @@ namespace VSOpenCode
             var success = await _serverController.StartAsync(_currentProjectRoot);
             if (!success)
             {
-                await ShowErrorPageAsync(StringsHelper.ErrorServerStartFailed, true);
+                // The service produces a complete, actionable message when it
+                // knows what went wrong; fall back to the generic one otherwise.
+                var details = _serverController.ServerService?.LastError;
+                var message = string.IsNullOrEmpty(details)
+                    ? StringsHelper.ErrorServerStartFailed
+                    : details;
+
+                await ShowErrorPageAsync(message, true);
                 return;
             }
 

@@ -127,7 +127,10 @@
     <value>WebView2 初始化失败</value>
   </data>
   <data name="Error.ServerStartFailed" xml:space="preserve">
-    <value>无法启动或连接 OpenCode 服务器。请确保 'opencode' 已安装并在 PATH 中可用。</value>
+    <value>无法启动或连接 OpenCode 服务器。请确保 'opencode' 已安装。</value>
+  </data>
+  <data name="Error.OpenCodeNotFound" xml:space="preserve">
+    <value>找不到 OpenCode 可执行文件。</value>
   </data>
   <data name="Error.SessionCreateFailed" xml:space="preserve">
     <value>创建会话失败</value>

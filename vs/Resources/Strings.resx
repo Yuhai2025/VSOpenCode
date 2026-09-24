@@ -127,7 +127,10 @@
     <value>WebView2 initialization failed</value>
   </data>
   <data name="Error.ServerStartFailed" xml:space="preserve">
-    <value>Failed to start or connect to OpenCode server. Make sure 'opencode' is installed and available in PATH.</value>
+    <value>Failed to start or connect to OpenCode server. Make sure 'opencode' is installed.</value>
+  </data>
+  <data name="Error.OpenCodeNotFound" xml:space="preserve">
+    <value>Could not find the OpenCode executable.</value>
   </data>
   <data name="Error.SessionCreateFailed" xml:space="preserve">
     <value>Failed to create session</value>

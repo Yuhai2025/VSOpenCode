@@ -5,10 +5,14 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Lets you build any branch on demand: Actions -> Build -> Run workflow
+  workflow_dispatch:
 
 jobs:
   build:
+    name: Build VS 2022 extension
     runs-on: windows-latest
+
     steps:
       - uses: actions/checkout@v7
 
@@ -17,11 +21,17 @@ jobs:
         with:
           dotnet-version: '10.x'
 
+      - name: Restore
+        run: dotnet restore vs/VSOpenCode.csproj
+
       - name: Build
-        run: dotnet build vs/VSOpenCode.csproj -c Release
+        run: dotnet build vs/VSOpenCode.csproj -c Release --no-restore
 
       - name: Upload VSIX
         uses: actions/upload-artifact@v7
         with:
           name: VSOpenCode.vsix
           path: vs/bin/Release/net472/VSOpenCode.vsix
+          # Fail the job if the VSIX was not produced, instead of silently
+          # uploading an empty artifact.
+          if-no-files-found: error

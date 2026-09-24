@@ -25,6 +25,7 @@ namespace VSOpenCode.Resources
         // Error messages
         public static string ErrorWebViewInitFailed => GetString("Error.WebViewInitFailed");
         public static string ErrorServerStartFailed => GetString("Error.ServerStartFailed");
+        public static string ErrorOpenCodeNotFound => GetString("Error.OpenCodeNotFound");
         public static string ErrorSessionCreateFailed => GetString("Error.SessionCreateFailed");
         public static string ErrorConnectionLost => GetString("Error.ConnectionLost");
         public static string ErrorSessionListFailed => GetString("Error.SessionListFailed");
